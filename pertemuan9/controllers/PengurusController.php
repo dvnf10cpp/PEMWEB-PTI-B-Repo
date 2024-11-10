@@ -1,33 +1,68 @@
 <?php
+session_start();
 
-include_once("model/PengurusBEM.php");
 
-class PengurusController 
-{
-    private $pengurusModel;
+require_once __DIR__ . '/../model/UserModel.php';
 
-    public function __construct()
-    {
-        $this->pengurusModel = new PengurusBEM();
+class PengurusController {
+    private $userModel;
+
+    public function __construct() {
+        $this->userModel = new UserModel();
     }
 
-    public function viewRegister()
-    {
-        include("views/register_view.php");
+    // Menampilkan form registrasi
+    public function viewRegister() {
+        include 'views/register_view.php';
     }
 
-    public function registerAccount()
-    {
-        // implementasi register akun dengan memanggil model juga
+    // Menyimpan akun pengurus baru ke database dan mengarahkan ke halaman login
+    public function registerAccount() {
+        if (!empty($_POST['username']) && !empty($_POST['password'])) {
+            $username = $_POST['username'];
+            $password = $_POST['password'];
+            
+            // Melakukan registrasi
+            if ($this->userModel->registerUser($username, $password)) {
+                // Jika registrasi berhasil, arahkan ke halaman login
+                header("Location: login.php");
+                exit;
+            } else {
+                echo "Registration failed!";
+            }
+        } else {
+            echo "Please fill all fields!";
+        }
     }
 
-    public function viewLogin()
-    {
-        include("views/login_view.php");
+    // Menampilkan form login
+    public function viewLogin() {
+        include 'views/login_view.php';
     }
 
-    public function loginAccount()
-    {
-        // implementasi logic login akun dengan memanggil model juga
+    // Memverifikasi login dan mengatur session
+    public function loginAccount() {
+        if (!empty($_POST['username']) && !empty($_POST['password'])) {
+            $username = $_POST['username'];
+            $password = $_POST['password'];
+            $user = $this->userModel->loginUser($username, $password);
+            if ($user) {
+                $_SESSION['user_id'] = $user['id'];
+                header("Location: list_proker.php");
+                exit;
+            } else {
+                echo "Login failed. Invalid credentials.";
+            }
+        } else {
+            echo "Please fill all fields!";
+        }
+    }
+
+    // Mengakhiri session pengguna (logout)
+    public function logout() {
+        session_destroy();
+        header("Location: login_view.php");
+        exit;
     }
 }
+

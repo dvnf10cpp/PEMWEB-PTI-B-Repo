@@ -23,21 +23,56 @@ class ProgramKerjaController
 
     public function viewListProker()
     {
+        $prokers = $this->programModel->fetchAllProgramKerja();
         include("views/list_proker.php");
     }
 
     public function addProker()
     {
-        // implementasi logic nambah proker dengan pemanggila model juga
+     
+        $nomorProgram = $_POST['nomorProgram'];
+        $nama = $_POST['nama'];
+        $suratKeterangan = $_POST['suratKeterangan'];
+
+        
+        $this->programModel->createModel($nomorProgram, $nama, $suratKeterangan);
+        $result = $this->programModel->insertProgramKerja();
+
+        if ($result) {
+            echo "Program kerja berhasil ditambahkan!";
+            header("Location: index.php?action=viewListProker"); 
+        } else {
+            echo "Gagal menambahkan program kerja.";
+        }
     }
 
     public function updateProker()
     {
-        // implementasi logic update proker dengan pemanggila model juga
+        $nomorProgram = $_POST['nomorProgram'];
+        $nama = $_POST['nama'];
+        $suratKeterangan = $_POST['suratKeterangan'];
+
+        $this->programModel->createModel($nomorProgram, $nama, $suratKeterangan);
+        $result = $this->programModel->updateProgramKerja();
+
+        if ($result) {
+            echo "Program kerja berhasil diupdate!";
+            header("Location: index.php?action=viewListProker"); 
+        } else {
+            echo "Gagal mengupdate program kerja.";
+        }
     }
 
     public function deleteProker()
     {
-        // implementasi logic hapus proker dengan pemanggila model juga
+        $nomorProgram = $_POST['nomorProgram'];
+        $result = $this->programModel->deleteProgramKerja($nomorProgram);
+
+        if ($result) {
+            echo "Program kerja berhasil dihapus!";
+            header("Location: index.php?action=viewListProker"); 
+        } else {
+            echo "Gagal menghapus program kerja.";
+        }
     }
 }

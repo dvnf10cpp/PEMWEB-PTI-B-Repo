@@ -2,10 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Register</title>
 </head>
 <body>
-    <h1>HELLO WORLD</h1>
+    <h2>Register Pengurus BEM</h2>
+    <form action="register.php" method="POST">
+    <label for="username">Username:</label>
+    <input type="text" name="username" required>
+    <label for="password">Password:</label>
+    <input type="password" name="password" required>
+    <button type="submit">Register</button>
+</form>
+    <a href="login_view.php">Sudah punya akun? Login disini</a>
 </body>
 </html>

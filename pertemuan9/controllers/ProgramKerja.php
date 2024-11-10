@@ -1,10 +1,10 @@
 <?php
 
-include_once("model/ProgramKerja.php");
+include_once("../model/ProgramKerja.php");
 
 class ProgramKerjaController 
 {
-    private $programModel;
+    public $programModel;
 
     public function __construct()
     {
@@ -28,16 +28,40 @@ class ProgramKerjaController
 
     public function addProker()
     {
-        // implementasi logic nambah proker dengan pemanggila model juga
+        $nomor = $_POST['nomor'];
+        $nama = $_POST['nama'];
+        $suratKeterangan = $_POST['surat_keterangan'];
+
+        $this->programModel->createModel($nomor, $nama, $suratKeterangan);
+
+        if ($this->programModel->insertProgramKerja()) {
+            header("Location: list_proker.php");
+            exit();
+        }
     }
 
     public function updateProker()
     {
-        // implementasi logic update proker dengan pemanggila model juga
+        $nomor = $_POST['nomor'];
+        $nama = $_POST['nama'];
+        $suratKeterangan = $_POST['surat_keterangan'];
+
+        $this->programModel->createModel($nomor, $nama, $suratKeterangan);
+
+        if ($this->programModel->updateProgramKerja()) {
+            header("Location: list_proker.php");
+            exit();
+        }
     }
 
     public function deleteProker()
     {
-        // implementasi logic hapus proker dengan pemanggila model juga
+        $nomor = $_POST['nomor'];
+
+        if ($this->programModel->deleteProgramKerja($nomor)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

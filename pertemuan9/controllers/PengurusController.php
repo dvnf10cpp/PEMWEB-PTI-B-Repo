@@ -1,4 +1,5 @@
-<?php
+    <?php
+
 
 include_once("model/PengurusBEM.php");
 
@@ -9,6 +10,7 @@ class PengurusController
     public function __construct()
     {
         $this->pengurusModel = new PengurusBEM();
+        session_start();
     }
 
     public function viewRegister()
@@ -18,7 +20,20 @@ class PengurusController
 
     public function registerAccount()
     {
-        // implementasi register akun dengan memanggil model juga
+        $nama = $_POST['nama'];
+        $nim = $_POST['nim'];
+        $angkatan = $_POST['angkatan'];
+        $jabatan = $_POST['jabatan'];
+        $foto = $_POST['foto'];
+        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+        $pengurus = new PengurusBEM();
+        $pengurus->createModel($nama, $nim, $angkatan, $jabatan, $foto, $password);
+        $pengurus->insertPengurusBEM();
+
+        if ($pengurus->insertPengurusBEM()) {
+            header("Location: views/login_view.php");
+            exit();
+        }       
     }
 
     public function viewLogin()
@@ -28,6 +43,30 @@ class PengurusController
 
     public function loginAccount()
     {
-        // implementasi logic login akun dengan memanggil model juga
+        if ($_SERVER["REQUEST_METHOD"] === "POST") {
+            $nim = $_POST['nim'];
+            $password = $_POST['password'];
+
+
+            // Validasi login
+            if ($this->pengurusModel->validateLogin($nim, $password)) {
+                $_SESSION['logged_in'] = true;
+                $_SESSION['nim'] = $nim;
+                header("Location: views/list_proker.php");
+                exit();
+            } else {
+                echo "Login gagal!";
+            }
+        } else {
+            $this->viewLogin();
+        }
+    }
+    
+    public function logout()
+    {
+        session_start();
+        session_destroy();
+        header("Location: views/login_view.php");
+        exit();
     }
 }

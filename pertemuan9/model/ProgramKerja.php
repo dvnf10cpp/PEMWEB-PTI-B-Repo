@@ -2,7 +2,7 @@
 
 require("config/koneksi_mysql.php");
 
-class ProgramKerja 
+class ProgramKerja
 {
     private int $nomorProgram;
     private string $nama;
@@ -11,7 +11,7 @@ class ProgramKerja
     public function createModel(
         $nomorProgram = "",
         $nama = "",
-        $suratKeterangan = "",
+        $suratKeterangan = ""
     )
     {
         $this->nomorProgram = $nomorProgram;
@@ -21,26 +21,39 @@ class ProgramKerja
 
     public function fetchAllProgramKerja()
     {
-        // implementasi fetch all rows with select
+        global $mysqli;
+        $result = $mysqli->query("SELECT * FROM program_kerja ORDER BY nomor");
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     public function fetchOneProgramKerja(int $nomorProgram)
     {
-        // implementasi fetch one row by nomor proker with select
+        global $mysqli;
+        $result = $mysqli->query("SELECT * FROM program_kerja WHERE nomor = $nomorProgram");
+        return $result->fetch_assoc();
     }
 
-    public function insertProgramKerja() 
+    public function insertProgramKerja()
     {
-        // implementasi sql insert
+        global $mysqli;
+        $query = "INSERT INTO program_kerja (nomor, nama, surat_keterangan) 
+                  VALUES ($this->nomorProgram, '$this->nama', '$this->suratKeterangan')";
+        return $mysqli->query($query);
     }
 
     public function updateProgramKerja()
     {
-        // implementasi sql update
+        global $mysqli;
+        $query = "UPDATE program_kerja SET 
+                  nama = '$this->nama',
+                  surat_keterangan = '$this->suratKeterangan'
+                  WHERE nomor = $this->nomorProgram";
+        return $mysqli->query($query);
     }
 
     public function deleteProgramKerja()
     {
-        // implementasi sql delete   
+        global $mysqli;
+        return $mysqli->query("DELETE FROM program_kerja WHERE nomor = $this->nomorProgram");
     }
 }

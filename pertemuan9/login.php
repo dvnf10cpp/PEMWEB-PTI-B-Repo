@@ -1,11 +1,11 @@
-<?php 
-
+<?php
+// login.php
 include_once("controllers/PengurusController.php");
 
 $controller = new PengurusController();
 
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
-    $controller->viewRegister();
+    $controller->viewLogin();
 } else {
-    $controller->registerAccount();
+    $controller->loginAccount();
 }

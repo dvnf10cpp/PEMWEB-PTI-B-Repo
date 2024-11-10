@@ -1,6 +1,7 @@
 <?php
+// model/PengurusBEM.php
 
-require("config/koneksi_mysql.php");
+require_once("config/koneksi_mysql.php");
 
 class PengurusBEM 
 {
@@ -17,7 +18,7 @@ class PengurusBEM
         $angkatan = "",
         $jabatan = "",
         $foto = "",
-        $password = "",
+        $password = ""
     )
     {
         $this->nama = $nama;
@@ -28,28 +29,60 @@ class PengurusBEM
         $this->password = $password;
     }
 
+    public function insertPengurusBEM() 
+    {
+        global $mysqli;
+        
+        try {
+            $query = "INSERT INTO pengurus_bem (nama, nim, angkatan, jabatan, foto, password) 
+                     VALUES (?, ?, ?, ?, ?, ?)";
+            
+            // Menggunakan prepared statement untuk keamanan
+            $stmt = $mysqli->prepare($query);
+            $stmt->bind_param("ssssss", 
+                $this->nama, 
+                $this->nim, 
+                $this->angkatan, 
+                $this->jabatan, 
+                $this->foto, 
+                $this->password
+            );
+            
+            $result = $stmt->execute();
+            $stmt->close();
+            
+            return $result;
+        } catch (Exception $e) {
+            // Log error jika diperlukan
+            error_log("Error inserting pengurus: " . $e->getMessage());
+            return false;
+        }
+    }
+
     public function fetchAllPengurusBEM()
     {
-        // implementasi fetch all rows with select
+        global $mysqli;
+        $result = $mysqli->query("SELECT * FROM pengurus_bem");
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     public function fetchOnePengurusBEM(string $nim)
     {
-        // implementasi fetch one row by nim with select
+        global $mysqli;
+        $stmt = $mysqli->prepare("SELECT * FROM pengurus_bem WHERE nim = ?");
+        $stmt->bind_param("s", $nim);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
     }
 
-    public function insertPengurusBEM() 
+    public function verifyLogin($nim, $password)
     {
-        $result = $mysqli->query("INSERT INTO pengurus_bem VALUES ('$this->nama', '$this->nim', '$this->angkatan', '$this->jabatan', '$this->foto', '$this->password')");
-    }
-
-    public function updatePengurusBEM()
-    {
-        // implementasi sql update
-    }
-
-    public function deletePengurusBEM()
-    {
-        // implementasi sql delete   
+        global $mysqli;
+        $stmt = $mysqli->prepare("SELECT * FROM pengurus_bem WHERE nim = ? AND password = ?");
+        $stmt->bind_param("ss", $nim, $password);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
     }
 }

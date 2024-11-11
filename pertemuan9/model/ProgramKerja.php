@@ -1,6 +1,6 @@
 <?php
 
-require("config/koneksi_mysql.php");
+require("../config/koneksi_mysql.php");
 
 class ProgramKerja 
 {
@@ -21,26 +21,40 @@ class ProgramKerja
 
     public function fetchAllProgramKerja()
     {
-        // implementasi fetch all rows with select
+        global $mysqli;
+        $result = $mysqli->query("SELECT * FROM program_kerja");
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     public function fetchOneProgramKerja(int $nomorProgram)
     {
-        // implementasi fetch one row by nomor proker with select
+        global $mysqli;
+        $stmt = $mysqli->prepare("SELECT * FROM program_kerja WHERE nomor = ?");
+        $stmt->bind_param("i", $nomorProgram);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc();
     }
 
-    public function insertProgramKerja() 
-    {
-        // implementasi sql insert
+    public function insertProgramKerja() {
+        global $mysqli;
+        $stmt = $mysqli->prepare("INSERT INTO program_kerja (nomor, nama, surat_keterangan) VALUES (?, ?, ?)");
+        $stmt->bind_param("iss", $this->nomorProgram, $this->nama, $this->suratKeterangan);
+        $stmt->execute();
     }
 
     public function updateProgramKerja()
     {
-        // implementasi sql update
+        global $mysqli;
+        $stmt = $mysqli->prepare("UPDATE program_kerja SET nama = ?, surat_keterangan = ? WHERE nomor = ?");
+        $stmt->bind_param("ssi", $this->nama, $this->suratKeterangan, $this->nomorProgram);
+        return $stmt->execute();
     }
 
-    public function deleteProgramKerja()
+    public function deleteProgramKerja($nomor)
     {
-        // implementasi sql delete   
+        global $mysqli;
+        $stmt = $mysqli->prepare("DELETE FROM program_kerja WHERE nomor = ?");
+        $stmt->bind_param("i", $nomor);
+        return $stmt->execute();
     }
 }

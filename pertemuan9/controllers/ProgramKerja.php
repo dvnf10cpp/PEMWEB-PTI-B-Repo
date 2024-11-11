@@ -1,10 +1,10 @@
 <?php
 
-include_once("model/ProgramKerja.php");
+include_once("../model/ProgramKerja.php");
 
-class ProgramKerjaController 
+class ProgramKerjaController
 {
-    private $programModel;
+    public $programModel;
 
     public function __construct()
     {
@@ -13,31 +13,68 @@ class ProgramKerjaController
 
     public function viewAddProker()
     {
-        include("views/add_proker.php");
+        include("../views/add_proker.php");
     }
 
     public function viewEditProker()
     {
-        include("views/edit_proker.php");
+        include("../views/edit_proker.php");
     }
 
     public function viewListProker()
     {
-        include("views/list_proker.php");
+        $programList = $this->programModel->fetchAllProgramKerja();
+        include("../views/list_proker.php");
     }
 
     public function addProker()
     {
-        // implementasi logic nambah proker dengan pemanggila model juga
+        if (isset($_POST['nomor']) && isset($_POST['nama']) && isset($_POST['surat_keterangan'])) {
+            $nomor = $_POST['nomor'];
+            $nama = $_POST['nama'];
+            $suratKeterangan = $_POST['surat_keterangan'];
+    
+            if (!empty($nomor)) {
+                $this->programModel->createModel($nomor, $nama, $suratKeterangan);
+    
+                if ($this->programModel->insertProgramKerja()) {
+                    header("Location: list_proker.php");
+                    exit();
+            }
+        } else {
+            echo "Semua field harus diisi!";
+        }
     }
+}
 
     public function updateProker()
     {
-        // implementasi logic update proker dengan pemanggila model juga
+        $nomor = $_POST['nomor'];
+        $nama = $_POST['nama'];
+        $suratKeterangan = $_POST['surat_keterangan'];
+
+        $this->programModel->createModel($nomor, $nama, $suratKeterangan);
+
+        if ($this->programModel->updateProgramKerja()) {
+            header("Location: list_proker.php");
+            exit();
+        } 
     }
 
     public function deleteProker()
     {
-        // implementasi logic hapus proker dengan pemanggila model juga
+        if (isset($_POST['nomor'])) {
+            $nomor = $_POST['nomor'];
+            if ($this->programModel->deleteProgramKerja($nomor)) {
+                header("Location: ../views/list_proker.php?message=Program kerja berhasil dihapus");
+                exit();
+            }
+        }
+    }
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['action']) && $_POST['action'] === 'delete') {
+        $controller = new ProgramKerjaController();
+        $controller->deleteProker();
     }
 }

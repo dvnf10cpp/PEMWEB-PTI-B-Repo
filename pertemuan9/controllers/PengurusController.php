@@ -18,7 +18,7 @@ class PengurusController
 
     public function registerAccount()
     {
-        // implementasi register akun dengan memanggil model juga
+        include("views/register_view.php");
     }
 
     public function viewLogin()
@@ -28,6 +28,6 @@ class PengurusController
 
     public function loginAccount()
     {
-        // implementasi logic login akun dengan memanggil model juga
+        include("views/login_view.php");
     }
 }

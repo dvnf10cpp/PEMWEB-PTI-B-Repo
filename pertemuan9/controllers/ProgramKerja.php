@@ -1,10 +1,12 @@
 <?php
 
-include_once("model/ProgramKerja.php");
+include_once("../model/ProgramKerja.php");
+
+
 
 class ProgramKerjaController 
 {
-    private $programModel;
+    public $programModel;
 
     public function __construct()
     {
@@ -18,26 +20,90 @@ class ProgramKerjaController
 
     public function viewEditProker()
     {
-        include("views/edit_proker.php");
-    }
+        if (isset($_GET['nomor'])) {
+            $nomorProgram = $_GET['nomor'];
+            $proker = $this->programModel->fetchOneProgramKerja($nomorProgram);
 
+            if ($proker) {
+                include("../views/edit_proker.php");
+            } else {
+                echo "Program Kerja tidak ditemukan.";
+            }
+        } else {
+            header("Location: list_proker.php");
+        }
+    }
     public function viewListProker()
     {
-        include("views/list_proker.php");
+        $listProker = $this->programModel->fetchAllProgramKerja();
+        include("../views/list_proker.php");
     }
+
 
     public function addProker()
     {
-        // implementasi logic nambah proker dengan pemanggila model juga
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $nomor = $_POST['nomor'];
+            $nama = $_POST['nama'];
+            $surat_keterangan = $_POST['surat_keterangan'];
+            if ($this->programModel->insertProgramKerja($nomor, $nama, $surat_keterangan)) {
+                header("Location: ../views/list_proker.php");
+            } else {
+                echo "Gagal menambah program kerja.";
+            }
+        }
     }
 
     public function updateProker()
     {
-        // implementasi logic update proker dengan pemanggila model juga
+        if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['nomor'])) {
+            $nomorProgram = $_POST['nomor'];
+            $nama = $_POST['nama'];
+            $suratKeterangan = $_POST['surat_keterangan'];
+
+            if ($this->programModel->updateProgramKerja($nomorProgram, $nama, $suratKeterangan)) {
+                header("Location: list_proker.php");
+            } else {
+                echo "Gagal memperbarui program kerja.";
+            }
+        }
     }
 
     public function deleteProker()
     {
-        // implementasi logic hapus proker dengan pemanggila model juga
+        if (isset($_GET['nomor'])) {
+            $nomor = $_GET['nomor'];
+            if ($this->programModel->deleteProgramKerja($nomor)) {
+                header("Location: ../views/list_proker.php");
+            } else {
+                echo "Gagal menghapus program kerja.";
+            }
+        }
+    }
+
+    
+}
+
+if (isset($_GET['action'])) {
+    $controller = new ProgramKerjaController();
+
+    switch ($_GET['action']) {
+        case 'addProker':
+            $controller->addProker();
+            break;
+        case 'updateProker':
+            $controller->updateProker();
+            break;
+        case 'deleteProker':
+            $controller->deleteProker();
+            break;
+        case 'viewAddProker':
+            $controller->viewAddProker();
+            break;
+        case 'viewEditProker':
+            $controller->viewEditProker();
+            break;
+        default:
+            $controller->viewListProker();
     }
 }

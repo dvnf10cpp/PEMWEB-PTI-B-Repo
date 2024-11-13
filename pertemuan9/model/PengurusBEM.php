@@ -4,6 +4,7 @@ require("config/koneksi_mysql.php");
 
 class PengurusBEM 
 {
+    private $mysqli;
     private string $nama;
     private string $nim;
     private int $angkatan;
@@ -11,15 +12,20 @@ class PengurusBEM
     private string $foto;
     private string $password;
 
+    public function __construct()
+    {
+        global $mysqli;
+        $this->mysqli = $mysqli;
+    }
+
     public function createModel(
         $nama = "",
         $nim = "",
         $angkatan = "",
         $jabatan = "",
         $foto = "",
-        $password = "",
-    )
-    {
+        $password = ""
+    ) {
         $this->nama = $nama;
         $this->nim = $nim;
         $this->angkatan = $angkatan;
@@ -30,26 +36,36 @@ class PengurusBEM
 
     public function fetchAllPengurusBEM()
     {
-        // implementasi fetch all rows with select
+        $result = $this->mysqli->query("SELECT * FROM pengurus_bem");
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     public function fetchOnePengurusBEM(string $nim)
     {
-        // implementasi fetch one row by nim with select
+        $stmt = $this->mysqli->prepare("SELECT * FROM pengurus_bem WHERE nim = ?");
+        $stmt->bind_param("s", $nim);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc();
     }
 
     public function insertPengurusBEM() 
     {
-        $result = $mysqli->query("INSERT INTO pengurus_bem VALUES ('$this->nama', '$this->nim', '$this->angkatan', '$this->jabatan', '$this->foto', '$this->password')");
+        $stmt = $this->mysqli->prepare("INSERT INTO pengurus_bem (nama, nim, angkatan, jabatan, foto, password) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssisss", $this->nama, $this->nim, $this->angkatan, $this->jabatan, $this->foto, $this->password);
+        return $stmt->execute();
     }
 
-    public function updatePengurusBEM()
+    public function updatePengurusBEM(string $nim)
     {
-        // implementasi sql update
+        $stmt = $this->mysqli->prepare("UPDATE pengurus_bem SET nama = ?, angkatan = ?, jabatan = ?, foto = ?, password = ? WHERE nim = ?");
+        $stmt->bind_param("sissss", $this->nama, $this->angkatan, $this->jabatan, $this->foto, $this->password, $nim);
+        return $stmt->execute();
     }
 
-    public function deletePengurusBEM()
+    public function deletePengurusBEM(string $nim)
     {
-        // implementasi sql delete   
+        $stmt = $this->mysqli->prepare("DELETE FROM pengurus_bem WHERE nim = ?");
+        $stmt->bind_param("s", $nim);
+        return $stmt->execute();
     }
 }

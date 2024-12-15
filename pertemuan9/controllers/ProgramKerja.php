@@ -1,8 +1,7 @@
 <?php
+require_once("models/ProgramKerja.php");
 
-include_once("model/ProgramKerja.php");
-
-class ProgramKerjaController 
+class ProgramKerjaController
 {
     private $programModel;
 
@@ -11,33 +10,48 @@ class ProgramKerjaController
         $this->programModel = new ProgramKerja();
     }
 
-    public function viewAddProker()
-    {
-        include("views/add_proker.php");
-    }
-
-    public function viewEditProker()
-    {
-        include("views/edit_proker.php");
-    }
-
-    public function viewListProker()
-    {
-        include("views/list_proker.php");
-    }
-
     public function addProker()
     {
-        // implementasi logic nambah proker dengan pemanggila model juga
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $nama = $_POST['nama'];
+            $surat_keterangan = $_FILES['surat_keterangan']['name'];
+
+            move_uploaded_file($_FILES['surat_keterangan']['tmp_name'], "uploads/" . $surat_keterangan);
+
+            $this->programModel->createModel(null, $nama, $surat_keterangan);
+            $this->programModel->insertProgramKerja();
+
+            header("Location: list_proker.php");
+        }
     }
 
     public function updateProker()
     {
-        // implementasi logic update proker dengan pemanggila model juga
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $nomor = $_POST['nomor'];
+            $nama = $_POST['nama'];
+            $surat_keterangan = $_FILES['surat_keterangan']['name'];
+
+            if (!empty($surat_keterangan)) {
+                move_uploaded_file($_FILES['surat_keterangan']['tmp_name'], "uploads/" . $surat_keterangan);
+            }
+
+            $this->programModel->createModel($nomor, $nama, $surat_keterangan);
+            $this->programModel->updateProgramKerja();
+
+            header("Location: list_proker.php");
+        }
     }
 
     public function deleteProker()
     {
-        // implementasi logic hapus proker dengan pemanggila model juga
+        if (isset($_GET['nomor'])) {
+            $nomor = $_GET['nomor'];
+            $this->programModel->createModel($nomor, null, null);
+            $this->programModel->deleteProgramKerja();
+
+            header("Location: list_proker.php");
+        }
     }
 }
+?>

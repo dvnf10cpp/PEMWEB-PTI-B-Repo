@@ -1,24 +1,23 @@
 <?php
-
-require("config/koneksi_mysql.php");
+require_once("config/koneksi_mysql.php");
 
 class PengurusBEM 
 {
-    private string $nama;
-    private string $nim;
-    private int $angkatan;
-    private string $jabatan;
-    private string $foto;
-    private string $password;
+    private $mysqli;
+    private $nama;
+    private $nim;
+    private $angkatan;
+    private $jabatan;
+    private $foto;
+    private $password;
 
-    public function createModel(
-        $nama = "",
-        $nim = "",
-        $angkatan = "",
-        $jabatan = "",
-        $foto = "",
-        $password = "",
-    )
+    public function __construct()
+    {
+        global $mysqli;
+        $this->mysqli = $mysqli;
+    }
+
+    public function createModel($nama, $nim, $angkatan, $jabatan, $foto, $password)
     {
         $this->nama = $nama;
         $this->nim = $nim;
@@ -28,28 +27,19 @@ class PengurusBEM
         $this->password = $password;
     }
 
-    public function fetchAllPengurusBEM()
+    public function insertPengurusBEM()
     {
-        // implementasi fetch all rows with select
+        $stmt = $this->mysqli->prepare("INSERT INTO pengurus_bem (nama, nim, angkatan, jabatan, foto, password) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssss", $this->nama, $this->nim, $this->angkatan, $this->jabatan, $this->foto, $this->password);
+        $stmt->execute();
     }
 
-    public function fetchOnePengurusBEM(string $nim)
+    public function fetchOnePengurusBEM($nim)
     {
-        // implementasi fetch one row by nim with select
-    }
-
-    public function insertPengurusBEM() 
-    {
-        $result = $mysqli->query("INSERT INTO pengurus_bem VALUES ('$this->nama', '$this->nim', '$this->angkatan', '$this->jabatan', '$this->foto', '$this->password')");
-    }
-
-    public function updatePengurusBEM()
-    {
-        // implementasi sql update
-    }
-
-    public function deletePengurusBEM()
-    {
-        // implementasi sql delete   
+        $stmt = $this->mysqli->prepare("SELECT * FROM pengurus_bem WHERE nim = ?");
+        $stmt->bind_param("s", $nim);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc();
     }
 }
+?>

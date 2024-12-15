@@ -1,12 +1,13 @@
-<?php 
+public function register()
+{
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $username = $_POST['username'];
+        $email = $_POST['email'];
+        $password = password_hash($_POST['password'], PASSWORD_BCRYPT); // Enkripsi password
 
-include_once("controllers/PengurusController.php");
+        // Validasi input dan simpan ke database
+        $this->model->addUser($username, $email, $password);
+    }
 
-$controller = new PengurusController();
-
-if ($_SERVER["REQUEST_METHOD"] === "GET") {
-    $controller->viewRegister();
-} else {
-    $controller->registerAccount();
+    $this->view('register');
 }
-
